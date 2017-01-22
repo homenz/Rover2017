@@ -132,7 +132,7 @@ def gen_send_func(cmd_dict, write_mode):
 	proto += "){\n"
 	
 	#Command
-	command = "\tbuf[0] = 0x%X;\n"%(cmd["code"] | (int(write_mode) << 7))
+	command = "\tbuf[0] = 0x%X;\n"%(cmd["code"] | (int(not write_mode) << 7))
 	
 	#Packet stuffing
 	body = ""
@@ -225,7 +225,7 @@ def gen_parse_func(cmd_dict):
 	for a in cmd["argument"]:
 		if a[0] == "*":
 			if prev_a == None:
-				raise ValueError("In command %s, variable-length argument used before length controlling argument.")
+				raise ValueError("In command %s, variable-length argument used before length controlling argument."%cmd["name"])
 			body += "\tmemcpy(%s, packet + b, *%s);\n"%(a[1], prev_a[1])
 			body += "\tb += *%s;\n"%prev_a[1]
 			totalsize += 255

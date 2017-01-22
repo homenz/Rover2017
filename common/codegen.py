@@ -58,6 +58,23 @@ def gen_struct_def(cmd_list):
 	s += "};\n\n"
 	return s
 
+def gen_build_str_def():
+	"""Return a declaration for a progmem string containing information about the build."""
+	return ""
+
+def gen_build_str_dec():
+	"""Return a definition of a PROGMEM string containing information about the build."""
+	#Get name of person building firmware
+	#git config --get-all user.name
+	#Get repo revision
+	#git log | head -1 | cut -d " " -f 2
+	#Get branch
+	#git branch | grep "\*" | cut -d " " -f 2
+	#Get modified status
+	#Date, time, gcc version (__VERSION__)
+	s = "Miniboard Firmware rev "
+	return ""
+
 
 def gen_header(cmd_list):
 	"""Return a string containing the C header for the communication module."""
@@ -73,11 +90,12 @@ def gen_header(cmd_list):
 	s += " * accesses the DataReal struct through this pointer. */\n"
 	s += "extern volatile struct comm_data_t *Data;\n\n"
 	s += "/* Parse a packet, update the struct, and send a reply. */\n"
-	#s += "void parse_packet(uint8_t *buf, uint16_t count);\n\n"	
+	s += "void parse_packet(uint8_t *buf, uint16_t count);\n\n"	
 	for c in cmd_list:
 		s += gen_send_proto(c) + "\n"
 		s + gen_parse_proto(c) + "\n"
 	s += gen_packing_protos()
+	s += gen_build_str_dec()
 	#s += "void send_packet(uint8_t *data, uint16_t count);\n\n"
 	s += "#ifdef __cplusplus\n"
 	s += "}\n"
@@ -99,13 +117,14 @@ def gen_source(cmd_list):
 	s += "#include <stdint.h>\n"
 	s += "#include <string.h>\n"
 	s += "#include \"commgen.h\"\n\n"
+	s += "#include \"comm.h\"\n\n"
 	s += gen_struct_dec(cmd_list)
 	for c in cmd_list:
 		s += gen_parse_func(c) + "\n"
 		s += gen_send_func(c, False) + "\n"
 	s += gen_packing_funcs()
 	s += gen_parse_packet_source(cmd_list)
-	
+	s += gen_build_str_def()
 	return s
 
 def gen_parse_packet_source(cmd_list):
@@ -120,7 +139,7 @@ def gen_parse_packet_source(cmd_list):
 	                                                  escape characters where necessary.
 	   as well as the send_* and parse_* functions."""
 	s = ""
-	s += "void parse_packet(uint8_t *buf, uint16_t count){"
+	s += "void parse_packet(uint8_t *buf, uint16_t count){\n"
 	s += "\tuint8_t cmd = buf[0];\n"
 	s += "\tswitch(cmd){\n"
 	for c in cmd_list:

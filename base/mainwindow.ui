@@ -15,45 +15,7 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="0">
-     <layout class="QVBoxLayout" name="verticalLayout">
-      <item>
-       <widget class="QPushButton" name="pushButton">
-        <property name="text">
-         <string>Connect Serials</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="pushButton_2">
-        <property name="text">
-         <string>Send a Message</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="pushButton_3">
-        <property name="text">
-         <string>Read Input</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="verticalSpacer">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>40</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-     </layout>
-    </item>
-    <item row="0" column="1">
+    <item row="1" column="0">
      <widget class="QQuickWidget" name="quickWidget">
       <property name="resizeMode">
        <enum>QQuickWidget::SizeRootObjectToView</enum>
@@ -62,6 +24,19 @@
        <url>
         <string>qrc:/panel.qml</string>
        </url>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="0">
+     <widget class="QPushButton" name="exit">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>exit</string>
       </property>
      </widget>
     </item>
@@ -76,6 +51,25 @@
      <height>19</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuSerial_Port">
+    <property name="title">
+     <string>Serial Port</string>
+    </property>
+    <addaction name="actionAutodetect_Serial"/>
+    <addaction name="actionStart_Thread"/>
+    <addaction name="actionStop_Thread"/>
+    <addaction name="actionPing"/>
+   </widget>
+   <widget class="QMenu" name="menuUser_Inputs">
+    <property name="title">
+     <string>User Inputs</string>
+    </property>
+    <addaction name="actionStart_Thread_2"/>
+    <addaction name="actionStop_Thread_2"/>
+    <addaction name="actionIdentify_controllers"/>
+   </widget>
+   <addaction name="menuSerial_Port"/>
+   <addaction name="menuUser_Inputs"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -86,6 +80,41 @@
    </attribute>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
+  <action name="actionAutodetect_Serial">
+   <property name="text">
+    <string>Autodetect Serial</string>
+   </property>
+  </action>
+  <action name="actionStart_Thread">
+   <property name="text">
+    <string>Start Thread</string>
+   </property>
+  </action>
+  <action name="actionStop_Thread">
+   <property name="text">
+    <string>Stop Thread</string>
+   </property>
+  </action>
+  <action name="actionStart_Thread_2">
+   <property name="text">
+    <string>Start Thread</string>
+   </property>
+  </action>
+  <action name="actionStop_Thread_2">
+   <property name="text">
+    <string>Stop Thread</string>
+   </property>
+  </action>
+  <action name="actionPing">
+   <property name="text">
+    <string>Ping</string>
+   </property>
+  </action>
+  <action name="actionIdentify_controllers">
+   <property name="text">
+    <string>Identify controllers</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>

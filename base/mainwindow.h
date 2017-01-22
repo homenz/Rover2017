@@ -1,12 +1,18 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QVector2D>
+#include <QVector>
 #include <QMainWindow>
 #include <QSerialPort>
 #include <QDebug>
 #include <QQuickWidget>
+#include <QThread>
+#include <QTime>
 
-#include "serialhandler.h"
+#include "serial/serialhandler.h"
+#include "inputs/controllerhandler.h"
+#include "threadarray.h"
 
 
 namespace Ui {
@@ -18,21 +24,56 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
+    virtual void closeEvent (QCloseEvent *event);
+
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    SerialHandler *m_serial;
 
 private:
     Ui::MainWindow *ui;
+
+    ThreadArray threadarray;
+
     QSerialPort output;
 
+    bool _serialRunning;
+
+    ControllerHandler *m_inputs;
+    SerialHandler *m_serial;
+
 public slots:
-    void connectSerial();
 
 private slots:
-    void on_pushButton_clicked();
-    void on_pushButton_2_clicked();
-    void on_pushButton_3_clicked();
+
+    void on_actionStart_Thread_triggered();
+
+    void on_actionStop_Thread_triggered();
+
+    void on_actionStart_Thread_2_triggered();
+
+    void on_actionStop_Thread_2_triggered();
+
+    void on_actionPing_triggered();
+
+    void on_actionAutodetect_Serial_triggered();
+
+    void on_actionIdentify_controllers_triggered();
+
+    void on_exit_clicked();
+
+signals:
+
+    void startSerial();
+    void stopSerial();
+    void startInputs();
+    void stopInputs();
+
+    void startReadIn();
+    void stopReadIn();
+    void closeThreads();
+    void startThreads();
+
+
 };
 
 #endif // MAINWINDOW_H

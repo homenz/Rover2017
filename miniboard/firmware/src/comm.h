@@ -6,6 +6,19 @@
  *          computer control interface.
  */
 #define COMM_UART 0
+#define COMM_BAUD 9600
 
 /* Configure the computer communications uart. */
 void comm_init(void);
+
+/* Send a packet to the computer, automatically inserting
+ * start, end, and escape bytes.
+ * This function must only be used by the communications module
+ * (comm.c). */
+void send_packet(uint8_t *data, uint16_t count);
+
+/* Receive a byte and place it in the packet buffer.
+ * This function handles start, escape, and end bytes.
+ * It calls the parse_packet() function when an end byte
+ * is received. */
+void comm_receive_byte(uint8_t byte);

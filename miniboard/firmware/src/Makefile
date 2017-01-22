@@ -1,6 +1,10 @@
 MCU:= atmega2560
 PROGRAMMER:= wiring
 PROGRAMMER_PORT:= /dev/ttyACM0
+PROGRAMMER_PORT_ALT:= /dev/ttyUSB0
+PROGRAMMER_PORT_OSX:= /dev/tty.usbmodem1421
+
+SIMAVR:=simavr
 
 CC:=avr-gcc
 OBJCOPY:=avr-objcopy
@@ -12,7 +16,9 @@ LIBS:=
 # Output filename, without extension
 OUTFILE:=../build/miniboard
 # Object file names
-OBJFILES:=sabertooth.o adc.o uart.o commgen.o comm.o
+# NOTE: Order is important! For the weak-symbol based UART receive handler mapping,
+# uart.o must come last.
+OBJFILES:=commgen.o comm.o callsign.o sabertooth.o adc.o  gpio.o gps.o videoswitch.o uart.o ax12.o
 # Main file
 FILE:=miniboard.c
 
@@ -31,9 +37,10 @@ commgen.o: ../../../common/SPECIFICATION.md
 	@$(CC) -mmcu=$(MCU) $(CFLAGS) -I. -c $< -o $@ $(LIBS)
 	
 # Compile & link
-$(OUTFILE).bin: $(OBJFILES)
+$(OUTFILE).bin: $(OBJFILES) miniboard.c
 	@$(CC) -mmcu=$(MCU) $(CFLAGS) -I. $(FILE) $(OBJFILES) -o $(OUTFILE).elf $(LIBS)
 	@$(OBJCOPY) -O binary -R .eeprom $(OUTFILE).elf $(OUTFILE).bin
+	@$(OBJCOPY) -O ihex -R .eeprom $(OUTFILE).elf $(OUTFILE).hex
 
 # Download firmware, without changing fuses or eeprom.
 download:
@@ -41,9 +48,18 @@ download:
 	then \
 		$(AVRDUDE) -p $(MCU) -c $(PROGRAMMER) -P $(PROGRAMMER_PORT) -D -U flash:w:$(OUTFILE).bin:r;\
 	else \
-		echo "Port $(PROGRAMMER_PORT) not found; skipping programming.";\
+		if [ -c $(PROGRAMMER_PORT_ALT) ];\
+		then \
+			$(AVRDUDE) -p $(MCU) -c $(PROGRAMMER) -P $(PROGRAMMER_PORT_ALT) -D -U flash:w:$(OUTFILE).bin:r; \
+		else \
+			if [ -c $(PROGRAMMER_PORT_OSX) ];\
+			then \
+				$(AVRDUDE) -p $(MCU) -c $(PROGRAMMER) -P $(PROGRAMMER_PORT_OSX) -D -U flash:w:$(OUTFILE).bin:r; \
+			else \
+				echo "Port $(PROGRAMMER_PORT), $(PROGRAMMER_PORT_ALT), or $(PROGRAMMER_PORT_OSX) not found; skipping programming."; \
+			fi; \
+		fi; \
 	fi;
-	
 
 #Delete generated files
 clean:
